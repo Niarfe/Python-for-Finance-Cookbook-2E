@@ -10,7 +10,7 @@ from plotly.offline import iplot
 cf.go_offline()
 
 # data functions
-@st.cache
+@st.cache_data
 def get_sp500_components():
     df = pd.read_html("https://en.wikipedia.org/wiki/List_of_S%26P_500_companies")
     df = df[0]
@@ -20,11 +20,11 @@ def get_sp500_components():
     )
     return tickers, tickers_companies_dict
 
-@st.cache
+@st.cache_data
 def load_data(symbol, start, end):
     return yf.download(symbol, start, end)
 
-@st.cache
+@st.cache_data
 def convert_df_to_csv(df):
     return df.to_csv().encode("utf-8")
 
@@ -108,6 +108,8 @@ Average, Bollinger Bands, Relative Strength Index
 """)
 
 df = load_data(ticker, start_date, end_date)
+print(df.head())
+df.to_csv('wassap.csv')
 
 ## data preview part
 data_exp = st.expander("Preview data")
@@ -129,6 +131,7 @@ data_exp.download_button(
 
 ## technical analysis plot
 title_str = f"{tickers_companies_dict[ticker]}'s stock price"
+assert isinstance(title_str, str), f"title_str is not a str, it's a {type(title_str)}"
 qf = cf.QuantFig(df, title=title_str)
 if volume_flag:
     qf.add_volume()
